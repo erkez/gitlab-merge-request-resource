@@ -57,6 +57,10 @@ fi
 
 project_path_encoded="${project_path//'/'/'%2F'}" # url encode "/"
 
+project_id="$(curl \
+--header "PRIVATE-TOKEN: ${private_token}" \
+"${protocol}://${gitlab_host}/api/v3/projects/${project_path_encoded}" | jq '.id')"
+
 target_url="${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
 
 cd "${destination}"
@@ -69,7 +73,7 @@ curl \
 --header "PRIVATE-TOKEN: ${private_token}" \
 --header "Content-Type: application/json" \
 --data "{\"state\":\"${new_status}\",\"name\":\"Concourse\",\"target_url\":\"${target_url}\"}" \
-"${protocol}://${gitlab_host}/api/v3/projects/${project_path_encoded}/statuses/${commit_sha}"
+"${protocol}://${gitlab_host}/api/v3/projects/${project_id}/statuses/${commit_sha}"
 
 version="{\"sha\":\"${commit_sha}\"}"
 

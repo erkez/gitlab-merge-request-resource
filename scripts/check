@@ -58,9 +58,13 @@ fi
 
 project_path_encoded="${project_path//'/'/'%2F'}" # url encode "/"
 
+project_id="$(curl \
+--header "PRIVATE-TOKEN: ${private_token}" \
+"${protocol}://${gitlab_host}/api/v3/projects/${project_path_encoded}" | jq '.id')"
+
 open_mrs="$(curl \
 --header "PRIVATE-TOKEN: ${private_token}" \
-"${protocol}://${gitlab_host}/api/v3/projects/${project_path_encoded}/merge_requests?state=opened&order_by=updated_at")"
+"${protocol}://${gitlab_host}/api/v3/projects/${project_id}/merge_requests?state=opened&order_by=updated_at")"
 
 num_mrs="$(echo "${open_mrs}" | jq 'length')"
 
